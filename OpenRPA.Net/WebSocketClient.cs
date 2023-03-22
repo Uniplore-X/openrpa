@@ -764,9 +764,9 @@ namespace OpenRPA.Net
             signedin = true;
             return signin.user;
         }
-        public async Task<TokenUser> Signin(string jwt, string clientagent = "", string clientversion = "", string traceId = "", string spanId = "")
+        public async Task<TokenUser> Signin(string jwt, string clientagent = "", string clientversion = "", string traceId = "", string spanId = "", string request_token_key = "")
         {
-            SigninMessage signin = new SigninMessage(jwt, global.version);
+            SigninMessage signin = new SigninMessage(jwt, global.version, request_token_key);
             if (!string.IsNullOrEmpty(clientagent)) signin.clientagent = clientagent;
             if (!string.IsNullOrEmpty(clientversion)) signin.clientversion = clientversion;
             signin.traceId = traceId; signin.spanId = spanId;
@@ -791,11 +791,11 @@ namespace OpenRPA.Net
             signedin = true;
             return signin.user;
         }
-        public async Task<TokenUser> Signin(SecureString jwt, string clientagent = "", string clientversion = "", string traceId = "", string spanId = "")
+        public async Task<TokenUser> Signin(SecureString jwt, string clientagent = "", string clientversion = "", string traceId = "", string spanId = "", string request_token_key = "")
         {
             try
             {
-                SigninMessage signin = new SigninMessage(jwt, global.version);
+                SigninMessage signin = new SigninMessage(jwt, global.version,request_token_key);
                 if (!string.IsNullOrEmpty(clientagent)) signin.clientagent = clientagent;
                 if (!string.IsNullOrEmpty(clientversion)) signin.clientversion = clientversion;
                 signin.traceId = traceId; signin.spanId = spanId;

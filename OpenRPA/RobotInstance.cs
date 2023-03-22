@@ -1213,6 +1213,14 @@ namespace OpenRPA
                 if (u.Scheme == "wss" || u.Scheme == "https") url = "https";
                 url = url + "://" + u.Host;
                 if (!u.IsDefaultPort) url = url + ":" + u.Port.ToString();
+
+                // uniplore对接基础地址
+                string uniBaseUrl = Config.local.uni_base_url;
+                if (string.IsNullOrEmpty(uniBaseUrl))
+                {
+                    uniBaseUrl = url;
+                }
+
                 // App.notifyIcon.ShowBalloonTip(5000, "tooltiptitle", "tipMessage", System.Windows.Forms.ToolTipIcon.Info);
                 var sw = new System.Diagnostics.Stopwatch();
                 sw.Start();
@@ -1283,7 +1291,7 @@ namespace OpenRPA
                                 var content = new System.Net.Http.StringContent("{\"key\": \"" + key + "\"}", Encoding.UTF8, "application/json");
 
                                 var client = new System.Net.Http.HttpClient();
-                                var result = await client.PostAsync(url + "/AddTokenRequest", content);
+                                var result = await client.PostAsync(uniBaseUrl + Config.local.uni_add_token_request_path, content);
                                 GenericTools.RunUI(() =>
                                 {
                                     Hide();
@@ -1292,12 +1300,12 @@ namespace OpenRPA
                                 });
 
 
-                                GenericTools.OpenUrl(url + "/Login?key=" + key);
+                                GenericTools.OpenUrl(uniBaseUrl + Config.local.uni_login_path + "?key=" + key);
                                 while (string.IsNullOrEmpty(jwt))
                                 {
                                     try
                                     {
-                                        var response = await client.GetAsync(url + "/GetTokenRequest?key=" + key);
+                                        var response = await client.GetAsync(uniBaseUrl + Config.local.uni_get_token_request_path + "?key=" + key);
                                         response.EnsureSuccessStatusCode();
                                         string responseBody = await response.Content.ReadAsStringAsync();
                                         JObject res = JObject.Parse(responseBody);
@@ -1364,7 +1372,8 @@ namespace OpenRPA
                             if (!string.IsNullOrEmpty(jwt))
                             {
                                 Config.local.jwt = Config.local.ProtectString(jwt);
-                                user = await global.webSocketClient.Signin(Config.local.UnprotectString(Config.local.jwt));
+                                //发送key到uniplore后、可以在前端显示机器人连接状态
+                                user = await global.webSocketClient.Signin(Config.local.UnprotectString(Config.local.jwt),"","","","",key);
                                 if (user != null)
                                 {
                                     Config.local.username = user.username;

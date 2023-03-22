@@ -12,9 +12,82 @@ namespace OpenRPA
 {
     public class Config
     {
+
+        //添加对接配置开始：
+        // enable: 是否启用，若为false将使用OpenRPA默认的路径，默认true
+        // base_url: 基础地址，若为空、则从wsurl里获取（不含path路径）
+        // login_path: 浏览器登录地址路径，与base_url拼接生成
+        // add_token_request_path: 添加token接口路径，与base_url拼接生成
+        // get_token_request_path: 获取token接口路径，与base_url拼接生成
+        public Dictionary<string, object> uniplore_properties { get { return GetProperty(null, new Dictionary<string, object>()); } }
+        public bool  uni_enable { get { return GetUniploreProperty(null, true); } }
+        public string uni_base_url { get { return GetUniploreProperty(null, ""); } }
+        public string uni_login_path { get { return !uni_enable ? "/Login" : GetUniploreProperty(null, "/uniplore-va/rpa/openRpaLogin"); } }
+        public string uni_add_token_request_path { get { return !uni_enable ? "/AddTokenRequest" : GetUniploreProperty(null, "/uniplore-va/rpa/openRpaAddTokenRequest"); } }
+        public string uni_get_token_request_path { get { return !uni_enable ? "/GetTokenRequest" : GetUniploreProperty(null, "/uniplore-va/rpa/openRpaGetTokenRequest"); } }
+
+        private T GetUniploreProperty<T>(string pluginname, T mydefault, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
+        {
+            try
+            {
+                if (propertyName == null)
+                {
+                    throw new ArgumentNullException(nameof(propertyName));
+                }
+
+                if (propertyName.StartsWith("uni_"))
+                {
+                    propertyName= propertyName.Substring(4);
+                }
+
+                object value = null;
+                uniplore_properties.TryGetValue(propertyName, out value);
+
+                if(value == null)
+                {
+                    value = mydefault;
+                }
+                else
+                {
+                    if (typeof(T) == typeof(int) && value is long)
+                    {
+                        value = int.Parse(value.ToString());
+                    }else if (typeof(T) == typeof(bool))
+                    {
+                        value = bool.Parse(value.ToString());
+                    }else if (typeof(T) == typeof(string[]) && value != null)
+                    {
+                        object o = null;
+                        if (value.GetType() == typeof(string[]))
+                        {
+                            o = value;
+                        }else if (value.GetType() == typeof(Newtonsoft.Json.Linq.JArray))
+                        {
+                            o = ((Newtonsoft.Json.Linq.JArray)value).ToObject<string[]>();
+                        }
+                        value=o;
+                    }else if(typeof(T) == typeof(double))
+                    {
+                        value = double.Parse(value.ToString());
+                    }
+                }
+
+                return (T)value;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.ToString());
+                throw;
+            }
+        }
+
+        //添加对接配置结束。
+        ///////////////////////////////////////////////////////////////////
+
         public Dictionary<string, object> settings = new Dictionary<string, object>();
         public Dictionary<string, object> _properties = null;
         public Dictionary<string, object> properties { get { return GetProperty(null, new Dictionary<string, object>()); } set { SetProperty(null, value); } }
+
         public string wsurl { get { return GetProperty(null, "wss://app.openiap.io/"); } set { SetProperty(null, value); } }
         public string username { get { return GetProperty(null, ""); } set { SetProperty(null, value); } }
         public byte[] jwt { get { return GetProperty<byte[]>(null, null); } set { SetProperty(null, value); } }
