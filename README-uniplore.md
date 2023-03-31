@@ -23,3 +23,5 @@
 - `OpenRPA.Interfaces/IWebSocketClient.cs`
 - `OpenRPA.Net/SigninMessage.cs`
 - `OpenRPA.Net/WebSocketClient.cs`
+升级Open3270框架版本
+- `TargetFrameworkVersion` 从`v3.5`升级到`v4.8`
