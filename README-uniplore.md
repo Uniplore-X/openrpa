@@ -25,3 +25,6 @@
 - `OpenRPA.Net/WebSocketClient.cs`
 升级Open3270框架版本
 - `TargetFrameworkVersion` 从`v3.5`升级到`v4.8`
+
+### 生成msi安装包
+安装WiX
