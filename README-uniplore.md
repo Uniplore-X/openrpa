@@ -34,7 +34,7 @@
 1. 安装.net framework v3.5（依赖v2.0与v3.0，安装时会自动下载安装）
 2. 安装WiX（[本次安装版本是v3.11.2](https://wixtoolset.org/docs/wix3/)，依赖.net framework v3.5）
 3. 重新打开项目，可能需要重新加载`OpenRPA.SetupActions`与`OpenRPA.SetupProject`等项目
-4. 在解决方案中，右键项目名为`OpenRPA`的子项目、点击`生成`（注意切换长Release），生成Release文件（在项目根目录下会出现`dist`目录）
-![alt 生成](./uniplore/build-openrpa.png)
+4. 将`OpenRPA`切换到`Release`，在解决方案中，右键项目名为`OpenRPA`的子项目、点击`打包`，生成Release文件（在项目根目录下会出现`dist`目录）
+   ![alt 生成](./uniplore/build-openrpa-pkg.png)
 5. 右键项目名为`OpenRPA.SetupProject`的子项目、点击`生成`，成功后、在该子项目的`bin`目录下会出现`.msi`的安装包
    ![alt 生成](./uniplore/build-installer.png)
