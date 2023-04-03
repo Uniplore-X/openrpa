@@ -2104,8 +2104,8 @@ namespace OpenRPA
         private void OnlinkOpenFlow(object _item)
         {
             if (string.IsNullOrEmpty(Config.local.wsurl)) return;
-            if (global.openflowconfig == null) return;
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(global.openflowconfig.baseurl));
+            if (global.openflowconfig == null || string.IsNullOrEmpty(global.openflowconfig.homeurl)) return;
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(global.openflowconfig.homeurl));
         }
         private bool CanlinkNodeRED(object _item)
         {
