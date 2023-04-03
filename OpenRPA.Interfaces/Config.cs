@@ -19,12 +19,14 @@ namespace OpenRPA
         // login_path: 浏览器登录地址路径，与base_url拼接生成
         // add_token_request_path: 添加token接口路径，与base_url拼接生成
         // get_token_request_path: 获取token接口路径，与base_url拼接生成
+        // openflow_config_path: 获取OpenFlow配置的接口路径，与base_url拼接生成
         public Dictionary<string, object> uniplore_properties { get { return GetProperty(null, new Dictionary<string, object>()); } }
         public bool  uni_enable { get { return GetUniploreProperty(null, true); } }
         public string uni_base_url { get { return GetUniploreProperty(null, ""); } }
         public string uni_login_path { get { return !uni_enable ? "/Login" : GetUniploreProperty(null, "/uniplore-va/rpa/openRpaLogin"); } }
         public string uni_add_token_request_path { get { return !uni_enable ? "/AddTokenRequest" : GetUniploreProperty(null, "/uniplore-va/rpa/openRpaAddTokenRequest"); } }
         public string uni_get_token_request_path { get { return !uni_enable ? "/GetTokenRequest" : GetUniploreProperty(null, "/uniplore-va/rpa/openRpaGetTokenRequest"); } }
+        public string uni_openflow_config_path { get { return !uni_enable ? "/config" : GetUniploreProperty(null, "/uniplore-va/rpa/openRpaOpenFlowConfig"); } }
 
         private T GetUniploreProperty<T>(string pluginname, T mydefault, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
         {
@@ -88,7 +90,7 @@ namespace OpenRPA
         public Dictionary<string, object> _properties = null;
         public Dictionary<string, object> properties { get { return GetProperty(null, new Dictionary<string, object>()); } set { SetProperty(null, value); } }
 
-        public string wsurl { get { return GetProperty(null, "wss://app.openiap.io/"); } set { SetProperty(null, value); } }
+        public string wsurl { get { return GetProperty(null, "wss://2s3139l714.goho.co/"); } set { SetProperty(null, value); } }
         public string username { get { return GetProperty(null, ""); } set { SetProperty(null, value); } }
         public byte[] jwt { get { return GetProperty<byte[]>(null, null); } set { SetProperty(null, value); } }
         public byte[] password { get { return GetProperty<byte[]>(null, null); } set { SetProperty(null, value); } }

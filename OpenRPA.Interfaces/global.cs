@@ -38,11 +38,19 @@ namespace OpenRPA
                     {
                         try
                         {
-                            var baseurl = new Uri(Config.local.wsurl);
+                            string uniBaseUrl = Config.local.uni_base_url;
+                            if (string.IsNullOrEmpty(uniBaseUrl))
+                            {
+                                uniBaseUrl = Config.local.wsurl;
+                            }
+
+                            var baseurl = new Uri(uniBaseUrl);
                             if (baseurl.Scheme == "wss") baseurl = new Uri(Config.local.wsurl.Replace("wss:", "https:"));
                             if (baseurl.Scheme == "ws") baseurl = new Uri(Config.local.wsurl.Replace("ws:", "http:"));
 
-                            var url = new Uri(baseurl, "/config");
+                            
+
+                            var url = new Uri(baseurl, Config.local.uni_openflow_config_path);
                             var json = wc.DownloadString(url);
                             _openflowconfig = JsonConvert.DeserializeObject<openflowconfig>(json);
                             _openflowconfig.baseurl = baseurl.ToString();
