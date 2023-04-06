@@ -89,8 +89,7 @@ namespace OpenRPA
         public Dictionary<string, object> settings = new Dictionary<string, object>();
         public Dictionary<string, object> _properties = null;
         public Dictionary<string, object> properties { get { return GetProperty(null, new Dictionary<string, object>()); } set { SetProperty(null, value); } }
-
-        public string wsurl { get { return GetProperty(null, "wss://2s3139l714.goho.co/"); } set { SetProperty(null, value); } }
+        public string wsurl { get { return GetProperty(null, "ws://192.168.2.115:30350/uniplore-va/websocket/rpaWebSocketServer"); } set { SetProperty(null, value); } }
         public string username { get { return GetProperty(null, ""); } set { SetProperty(null, value); } }
         public byte[] jwt { get { return GetProperty<byte[]>(null, null); } set { SetProperty(null, value); } }
         public byte[] password { get { return GetProperty<byte[]>(null, null); } set { SetProperty(null, value); } }
