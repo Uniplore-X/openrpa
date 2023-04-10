@@ -134,7 +134,21 @@ namespace OpenRPA
         public bool remote_allow_multiple_running { get { return GetProperty(null, false); } set { SetProperty(null, value); } }
         public bool remote_allowed { get { return GetProperty(null, true); } set { SetProperty(null, value); } }
         public bool remote_allowed_killing_self { get { return GetProperty(null, true); } set { SetProperty(null, value); } }
-        public bool remote_allowed_killing_any { get { return GetProperty(null, false); } set { SetProperty(null, value); } }
+        public bool remote_allowed_killing_any { 
+            get { 
+                bool b;
+                if (!properties.ContainsKey("remote_allowed_killing_any"))
+                {
+                    b = global.openflowconfig.remote_allowed_killing_any;
+                }
+                else
+                {
+                    b = GetProperty(null, false);
+                }
+                return b;
+            } 
+            set { SetProperty(null, value); } 
+        }
         public int remote_allow_multiple_running_max { get { return GetProperty(null, 2); } set { SetProperty(null, value); } }
         public string cef_useragent { get { return GetProperty(null, ""); } set { SetProperty(null, value); } }
         public string getting_started_url { get { return GetProperty(null, ""); } set { SetProperty(null, value); } }

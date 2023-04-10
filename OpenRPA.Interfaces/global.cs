@@ -104,6 +104,7 @@ namespace OpenRPA
         public string nodered_domain_schema { get; set; }
         public string baseurl { get; set; }
         public string homeurl { get; set; }
+        public bool remote_allowed_killing_any { get; set; }
         public string getting_started_url { get; set; }
         public int websocket_package_size { get; set; }
         public string version { get; set; }
