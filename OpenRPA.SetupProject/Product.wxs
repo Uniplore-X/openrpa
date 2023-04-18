@@ -32,8 +32,8 @@
 		<MajorUpgrade AllowSameVersionUpgrades="yes" DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
 		<MediaTemplate EmbedCab="yes" />
 
-		<Icon Id="open_rpa.ico" SourceFile="open_rpa.ico"/>
-		<Property Id="ARPPRODUCTICON" Value="open_rpa.ico" />
+		<Icon Id="uniplore_open_rpa" SourceFile="uniplore_open_rpa.ico"/>
+		<Property Id="ARPPRODUCTICON" Value="uniplore_open_rpa" />
 
 
 		<Property Id="INSTALLOFFICEFEATURE" Value="TRUE" />
@@ -159,8 +159,8 @@
 		<DirectoryRef Id="ApplicationProgramsFolder">
 			<Component Id="ApplicationShortcut" Guid="$(var.UpgradeCode)" Feature="MainFeature">
 				<Shortcut Id="ApplicationStartMenuShortcut"
-						  Name="OpenRPA"
-						  Description="OpenRPA"
+						  Name="UniploreOpenRPA"
+						  Description="UniploreOpenRPA"
 						  Target="[#openrpaExe]"
 						  WorkingDirectory="INSTALLDIR"/>
 				<RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall"/>

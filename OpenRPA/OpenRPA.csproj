@@ -4,23 +4,28 @@
 		<CefSharpAnyCpuSupport>true</CefSharpAnyCpuSupport>
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net462</TargetFramework>
-		<ApplicationIcon>Resources\open_rpa.ico</ApplicationIcon>
+		<ApplicationIcon>Resources\uniplore_open_rpa.ico</ApplicationIcon>
 		<StartupObject />
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<!--<NuspecFile>nuget.nuspec</NuspecFile>-->
-		<Description>Base UI of OpenRPA, used as part of OpenRPA robot</Description>
+		<Description>Base UI of Uniplore OpenRPA, used as part of Uniplore OpenRPA robot</Description>
 		<PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
-		<PackageProjectUrl>https://github.com/open-rpa/openrpa</PackageProjectUrl>
+		<PackageProjectUrl>https://github.com/Uniplore-X/openrpa</PackageProjectUrl>
 		<Version>1.4.54</Version>
 		<PackageReleaseNotes></PackageReleaseNotes>
-		<PackageIcon>openrpa.png</PackageIcon>
+		<PackageIcon>uniplore_open_rpa.png</PackageIcon>
 		<Configurations>Debug;Release;ReleaseNuget;PrepInstaller</Configurations>
 		<PackageTags></PackageTags>
-		<RepositoryUrl>https://github.com/open-rpa/openrpa</RepositoryUrl>
+		<RepositoryUrl>https://github.com/Uniplore-X/openrpa</RepositoryUrl>
 		<Platforms>AnyCPU;x86</Platforms>
-		<Authors>Allan Zimmermann</Authors>
-		<Company>OpenIAP</Company>
+		<Authors>Uniplore</Authors>
+		<Company>Uniplore</Company>
 		<UserSecretsId>67d03aca-cfb1-4f1c-9efa-111ce7476743</UserSecretsId>
+		<PackageId>OpenRPA</PackageId>
+		<Product>UniploreOpenRPA</Product>
+		<AssemblyName>OpenRPA</AssemblyName>
+		<RootNamespace>OpenRPA</RootNamespace>
+		<Title>UniploreOpenRPA</Title>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<OutputPath>..\debug</OutputPath>
@@ -61,7 +66,7 @@
 	<ItemGroup>
 		<!-- https://tyrrrz.me/blog/additional-nuget-files-in-new-csproj -->
 		<None Include="$(OutputPath)\OpenRPA.exe.config" Pack="true" PackagePath="build" />
-		<None Include="Resources\openrpa.png" Pack="true" PackagePath="\" />
+		<None Include="Resources\uniplore_open_rpa.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="DotNetProjects.Wpf.Toolkit" Version="5.0.43" />
@@ -168,8 +173,8 @@
 		<None Remove="Resources\icons\variable.png" />
 		<None Remove="Resources\loadingbackground.jpg" />
 		<None Remove="Resources\open.png" />
-		<None Remove="Resources\open_rpa.ico" />
-		<None Remove="Resources\open_rpa_white.png" />
+		<None Remove="Resources\uniplore_open_rpa.ico" />
+		<None Remove="Resources\uniplore_open_rpa_white.png" />
 		<None Remove="Resources\snippet.png" />
 		<None Remove="Resources\state\Abort.png" />
 		<None Remove="Resources\state\Completed.png" />
@@ -406,7 +411,7 @@
 		<Resource Include="Resources\icons\spinner2.png" />
 		<Resource Include="Resources\icons\variable.png" />
 		<Resource Include="Resources\icons\open.png" />
-		<Resource Include="Resources\open_rpa.ico" />
+		<Resource Include="Resources\uniplore_open_rpa.ico" />
 		<EmbeddedResource Include="Resources\toolbox\addworkitem.png" />
 		<EmbeddedResource Include="Resources\toolbox\bulkaddworkitems.png" />
 		<EmbeddedResource Include="Resources\toolbox\commentout.png" />
@@ -534,7 +539,7 @@
 		<Resource Include="Resources\designer\invokeopenflow.png" />
 		<Resource Include="Resources\designer\closeapplication.png" />
 		<Resource Include="Resources\designer\typetext.png" />
-		<Resource Include="Resources\open_rpa_white.png" />
+		<Resource Include="Resources\uniplore_open_rpa_white.png" />
 		<Resource Include="Resources\state\Abort.png" />
 		<Resource Include="Resources\state\Completed.png" />
 		<Resource Include="Resources\state\failed.png" />

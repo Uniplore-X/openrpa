@@ -211,7 +211,7 @@
     <value>Neu</value>
   </data>
 	<data name="maintitle" xml:space="preserve">
-    <value>OpenRPA</value>
+    <value>Uniplore OpenRPA</value>
   </data>
 	<data name="main_reload" xml:space="preserve">
     <value>Neu laden</value>
@@ -238,7 +238,7 @@
     <value>Öffnen</value>
   </data>
 	<data name="openflow" xml:space="preserve">
-    <value>iDIS</value>
+    <value>Uniplore iDIS</value>
   </data>
 	<data name="openrpa" xml:space="preserve">
     <value>OpenRPA</value>

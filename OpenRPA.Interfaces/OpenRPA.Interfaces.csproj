@@ -55,7 +55,7 @@
 1.0.9 Added a Snippet interface, for addons to offers example snippets.
 
 1.0.8 Add generic version of AsyncTaskCodeActivity</PackageReleaseNotes>
-    <PackageIcon>openrpa.png</PackageIcon>
+    <PackageIcon>uniplore_open_rpa.png</PackageIcon>
     <Configurations>Debug;Release;ReleaseNuget;PrepInstaller</Configurations>
     <Description>OpenRPA interfaces and tools, used to add functionality for OpenRPA robot</Description>
     <PackageTags></PackageTags>
@@ -78,7 +78,7 @@
     <OutputPath />
   </PropertyGroup>
   <ItemGroup>
-    <None Include="Resources\openrpa.png" Pack="true" PackagePath="\" />
+    <None Include="Resources\uniplore_open_rpa.png" Pack="true" PackagePath="\" />
     <None Remove="Resources\search.png" />
     <None Remove="Resources\searchfailed.png" />
     <None Remove="Resources\searchfound.png" />

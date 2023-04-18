@@ -5,8 +5,8 @@
 !include "StrRep.nsh"
 !include "ReplaceInFile.nsh"
 
-Name "OpenRPA"
-OutFile "OpenRPA.exe"
+Name "UniploreOpenRPA"
+OutFile "UniploreOpenRPA.exe"
 InstallDir $PROGRAMFILES\OpenRPA
 function .onInit
     ${If} ${RunningX64}

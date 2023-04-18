@@ -6,7 +6,7 @@
     <ProductVersion>3.10</ProductVersion>
     <ProjectGuid>70e2e351-ac0d-486d-b357-b890ef20d1c8</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>OpenRPA</OutputName>
+    <OutputName>Uniplore OpenRPA</OutputName>
     <OutputType>Package</OutputType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -67,7 +67,7 @@
     <Content Include="harvestMain.bat" />
     <Content Include="HeatTransform.xslt" />
     <Content Include="lanEN.wxi" />
-    <Content Include="open_rpa.ico" />
+    <Content Include="uniplore_open_rpa.ico" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OpenRPA.SetupActions\OpenRPA.SetupActions.csproj">

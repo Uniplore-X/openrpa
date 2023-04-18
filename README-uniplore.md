@@ -1,5 +1,5 @@
 ### 配置修改
-在OpenRPA中增加配置项`settings.json`
+在`UniploreOpenRPA`中增加配置项`settings.json`
 ```json
 {
   "noweblogin": false,

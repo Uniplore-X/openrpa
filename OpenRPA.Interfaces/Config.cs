@@ -89,7 +89,7 @@ namespace OpenRPA
         public Dictionary<string, object> settings = new Dictionary<string, object>();
         public Dictionary<string, object> _properties = null;
         public Dictionary<string, object> properties { get { return GetProperty(null, new Dictionary<string, object>()); } set { SetProperty(null, value); } }
-        public string wsurl { get { return GetProperty(null, "ws://192.168.2.115:30350/uniplore-va/websocket/rpaWebSocketServer"); } set { SetProperty(null, value); } }
+        public string wsurl { get { return GetProperty(null, ""); } set { SetProperty(null, value); } }
         //It will not open browser page for login if setted true and username/password (or unsafepassword) not null. Think about that username/password was provided and nobody could handle the browser login operation at the moment.
         public bool noweblogin { get { return GetProperty(null, false); } set { SetProperty(null, value); } }
         public string username { get { return GetProperty(null, ""); } set { SetProperty(null, value); } }
