@@ -11,7 +11,7 @@
 		<Description>Base UI of Uniplore OpenRPA, used as part of Uniplore OpenRPA robot</Description>
 		<PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/Uniplore-X/openrpa</PackageProjectUrl>
-		<Version>1.4.54</Version>
+		<Version>1.4.55</Version>
 		<PackageReleaseNotes></PackageReleaseNotes>
 		<PackageIcon>uniplore_open_rpa.png</PackageIcon>
 		<Configurations>Debug;Release;ReleaseNuget;PrepInstaller</Configurations>
