@@ -291,6 +291,10 @@
 				<File Id="OpenRPA.Windows.resources.dll_zhhant" Source="!(wix.MainSource)\zh-Hant\OpenRPA.Windows.resources.dll" />
 			</Component>
 
+			<Component Id='resources' Win64='yes' Directory="resources">
+				<File Id='pythonLibs' Source='!(wix.MainSource)\Resources\python-pip-and-uniplore-requirelibs.zip' />
+			</Component>
+
 		</ComponentGroup>
 
 		<DirectoryRef Id="INSTALLDIR">
@@ -316,6 +320,8 @@
 			</Directory>
 			<Directory Id="mainzhhant" Name="zh-Hant">
 			</Directory>
+			<Directory Id="resources" Name="Resources">
+            </Directory>
 		</DirectoryRef>
 
 	</Fragment>
