@@ -345,7 +345,7 @@ namespace OpenRPA.Script.Activities
                     {
                         if (PluginConfig.use_embedded_python)
                         {
-                            UniploreRequireLibs.checkEmbeddedLibs(currentdir);
+                            UniploreRequireLibs.CheckEmbeddedLibs(currentdir);
                             System.IO.Directory.SetCurrentDirectory(Python.Included.Installer.EmbeddedPythonHome);
                         }
                         else

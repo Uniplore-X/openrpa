@@ -13,7 +13,7 @@ namespace OpenRPA.Script
 {
     internal class UniploreRequireLibs
     {
-        public static void checkEmbeddedLibs(string appDir)
+        public static void CheckEmbeddedLibs(string appDir)
         {
             string pyHome = Python.Included.Installer.EmbeddedPythonHome;
             string seleniumPath = pyHome + "\\Lib\\site-packages\\selenium";
