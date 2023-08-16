@@ -1,18 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using System.IO.Compression;
-
-using OpenRPA.Interfaces;
 using System.Diagnostics;
+
+using Python.Runtime;
+using OpenRPA.Interfaces;
+using System.Windows.Forms;
+using System.Drawing;
 
 namespace OpenRPA.Script
 {
     internal class UniploreRequireLibs
     {
+
+        public static void ShowBalloonTip(string title, string content, int timeout=5000, ToolTipIcon icon= ToolTipIcon.Info)
+        {
+            var notifyIcon = new NotifyIcon();
+            notifyIcon.Icon = SystemIcons.Information;
+            notifyIcon.Visible = true;
+            notifyIcon.ShowBalloonTip(timeout, title, content, icon);
+        }
+
+
         public static void CheckEmbeddedLibs(string appDir)
         {
             string pyHome = Python.Included.Installer.EmbeddedPythonHome;
@@ -22,11 +31,14 @@ namespace OpenRPA.Script
                 if(!fi.Exists)
                 {
                     Log.Warning("uniplore required libs not found: " + fi.FullName);
+                    ShowBalloonTip("Error", "uniplore required libs not found", 5000, ToolTipIcon.Warning);
                 }
                 else
                 {
                     try
                     {
+                        ShowBalloonTip("提示", "正则安装python依赖，请稍等片刻...", 10000);
+
                         // 解压依赖包到一个随机的临时目录
                         string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
                         Directory.CreateDirectory(tempDirectory);
@@ -64,10 +76,30 @@ namespace OpenRPA.Script
                         }
 
                         Directory.Delete(tempDirectory, true);
+
+                        // 测试是否安装成功, 同时能解决首次安装后无法找到模块的问题
+                        IntPtr lck = IntPtr.Zero;
+                        bool doRelease = false;
+                        try
+                        {
+                            PythonEngine.Initialize();
+
+                            lck = PythonEngine.AcquireLock();
+                            doRelease = true;
+                            PythonEngine.RunSimpleString("from uniplore_rpatest.webdriver import UniploreChrome\n\nprint(str(UniploreChrome))");
+                        }
+                        finally
+                        {
+                            if (doRelease) PythonEngine.ReleaseLock(lck);
+                            PythonEngine.Shutdown();
+                        }
+
+                        ShowBalloonTip("提示", "python依赖安装完成");
                     }
                     catch(Exception ex)
                     {
                         Log.Warning("install uniplore python libs failed: "+ ex.ToString());
+                        ShowBalloonTip("错误", "python依赖安装失败！", 5000, ToolTipIcon.Error);
                     }
                     
                 }
