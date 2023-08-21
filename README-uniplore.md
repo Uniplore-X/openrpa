@@ -1,3 +1,36 @@
+
+### 本地开发说明
+原始文档：[Building-from-source-notes](https://github.com/uniplore/openrpa/wiki/Building-from-source-notes)
+
+#### 1、克隆项目
+```shell
+git clone https://github.com/uniplore/openrpa.git
+```
+#### 2、更新子项目
+在上一步克隆项目时，也可加上`--recursive`参数，一起将子项目拉下来。
+```
+git submodule update --init
+```
+
+#### 3、安装visual studio社区版
+下载并安装Visual Studio 2022 Community edition ( [download here](https://visualstudio.microsoft.com/downloads/) )
+
+#### 4、安装依赖库
+1. 打开`openrpa.sln`，忽略首次出现的错误（缺少.net相关开发包）
+2. 右键点击`PatchVSCode`，将其设置为启动项目，并运行
+3. 等待下载缺少的依赖库（选择覆盖，允许管理员权限）
+4. 关闭visual studio并重新打开`openrpa.sln`，删除installer目录下的两个`installer`项目
+
+#### 5、开启模块
+- 打开项目依赖窗口
+
+![open-project-dependencies](./uniplore/open-project-dependencies.png)
+
+- 设置`OpenRPA`依赖的模块
+
+![set-project-dependencies](./uniplore/set-project-dependencies.png)
+
+
 ### 配置修改
 在`UniploreOpenRPA`中增加配置项`settings.json`
 ```json
