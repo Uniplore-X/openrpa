@@ -8,6 +8,7 @@ using OpenRPA.Interfaces;
 using System.Windows.Forms;
 using System.Drawing;
 
+
 namespace OpenRPA.Script
 {
     internal class UniploreRequireLibs
@@ -19,6 +20,15 @@ namespace OpenRPA.Script
             notifyIcon.Icon = SystemIcons.Information;
             notifyIcon.Visible = true;
             notifyIcon.ShowBalloonTip(timeout, title, content, icon);
+
+            System.Timers.Timer timer = new System.Timers.Timer(timeout);
+            timer.AutoReset = false;
+            timer.Elapsed += (sender, e)=>
+            {
+                notifyIcon.Visible = false;
+                notifyIcon.Dispose();
+            };
+            timer.Start();
         }
 
 
@@ -49,8 +59,8 @@ namespace OpenRPA.Script
                         // 批量安装
                         Process process = new Process();
                         process.StartInfo.WorkingDirectory = tempDirectory;
-                        process.StartInfo.FileName = tempDirectory+ @"\install.bat";
-                        process.StartInfo.Arguments = pyHome; // 使用/c参数执行命令并关闭CMD窗口
+                        process.StartInfo.FileName = pyHome + @"\python.exe";
+                        process.StartInfo.Arguments = tempDirectory + @"\install.py";
                         process.StartInfo.RedirectStandardOutput = true;
                         process.StartInfo.RedirectStandardOutput = true;
                         process.StartInfo.RedirectStandardError = true;
