@@ -27,7 +27,6 @@ namespace OpenRPA.Script
 
             if (PluginConfig.use_embedded_python)
             {
-                UniploreRequireLibs.CheckEmbeddedLibs(System.IO.Directory.GetCurrentDirectory());
                 var path = Python.Included.Installer.EmbeddedPythonHome;
                 Log.Information("Installing pip into " + path);
                 if (!Python.Included.Installer.IsPipInstalled())

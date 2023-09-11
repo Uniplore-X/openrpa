@@ -100,6 +100,9 @@ namespace OpenRPA.Script
                 {
                     Python.Included.Installer.SetupPython(false).Wait();
                 }
+
+                UniploreRequireLibs.CheckEmbeddedLibs(System.IO.Directory.GetCurrentDirectory());
+
                 var path = Python.Included.Installer.EmbeddedPythonHome;
                 PythonUtil.Setup.SetPythonPath(path, true);
                 // Python.Runtime.PythonEngine.Initialize();

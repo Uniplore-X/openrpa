@@ -7,12 +7,13 @@ using Python.Runtime;
 using OpenRPA.Interfaces;
 using System.Windows.Forms;
 using System.Drawing;
-
+using OpenRPA.Script.Activities;
 
 namespace OpenRPA.Script
 {
     internal class UniploreRequireLibs
     {
+        private static bool hasChecked = false;
 
         public static void ShowBalloonTip(string title, string content, int timeout=5000, ToolTipIcon icon= ToolTipIcon.Info)
         {
@@ -33,12 +34,24 @@ namespace OpenRPA.Script
             };
         }
 
-
+        /// <summary>
+        /// 需要调用的地方：OpenRPA.Script/Plugin.cs
+        /// </summary>
+        /// <param name="appDir"></param>
         public static void CheckEmbeddedLibs(string appDir)
         {
+            if (hasChecked)
+            {
+                return;
+            }
+
             string pyHome = Python.Included.Installer.EmbeddedPythonHome;
             string seleniumPath = pyHome + "\\Lib\\site-packages\\selenium";
-            if (!Directory.Exists(seleniumPath)){
+            if (Directory.Exists(seleniumPath))
+            {
+                hasChecked = true;
+            }else
+            {
                 var fi = new System.IO.FileInfo(appDir + @"\Resources\python-pip-and-uniplore-requirelibs.zip");
                 if(!fi.Exists)
                 {
@@ -89,24 +102,26 @@ namespace OpenRPA.Script
 
                         Directory.Delete(tempDirectory, true);
 
-                        // 测试是否安装成功, 同时能解决首次安装后无法找到模块的问题
-                        IntPtr lck = IntPtr.Zero;
-                        bool doRelease = false;
-                        try
-                        {
-                            PythonEngine.Initialize();
 
-                            lck = PythonEngine.AcquireLock();
-                            doRelease = true;
-                            PythonEngine.RunSimpleString("from uniplore_rpatest.webdriver import UniploreChrome\n\nprint(str(UniploreChrome))");
-                        }
-                        finally
+                        // 测试是否安装成功, 同时能解决首次安装后无法找到模块的问题
+                        //PythonEngine.Shutdown();
+                        //Python.Included.Installer.SetupPython(false).Wait();
+
+                        // Python.Runtime.PythonEngine.Initialize();
+                        //_ = Python.Runtime.PythonEngine.BeginAllowThreads();
+                       
+                        InvokeCode.InitPython();
+                        using (Python.Runtime.Py.GIL())
                         {
-                            if (doRelease) PythonEngine.ReleaseLock(lck);
-                            PythonEngine.Shutdown();
+                            //var scope = Python.Runtime.Py.CreateScope();
+                            //scope.Reload();
+                            //PythonEngine.RunSimpleString("import sys\n\nfor k in sys.modules.keys():\n  del sys.modules[k]\n");
+                            var rpatest = Py.Import("uniplore_rpatest.webdriver");
+                            Log.Information("uniplore_rpatest: " + rpatest);
                         }
 
                         ShowBalloonTip("提示", "python依赖安装完成");
+                        hasChecked = true;
                     }
                     catch(Exception ex)
                     {
