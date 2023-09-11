@@ -20,15 +20,17 @@ namespace OpenRPA.Script
             notifyIcon.Icon = SystemIcons.Information;
             notifyIcon.Visible = true;
             notifyIcon.ShowBalloonTip(timeout, title, content, icon);
-
-            System.Timers.Timer timer = new System.Timers.Timer(timeout);
-            timer.AutoReset = false;
-            timer.Elapsed += (sender, e)=>
+            notifyIcon.Click += (sender, e) =>
             {
                 notifyIcon.Visible = false;
                 notifyIcon.Dispose();
             };
-            timer.Start();
+
+            notifyIcon.DoubleClick += (sender, e) =>
+            {
+                notifyIcon.Visible = false;
+                notifyIcon.Dispose();
+            };
         }
 
 
