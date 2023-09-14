@@ -62,7 +62,7 @@ namespace OpenRPA.Script
                 {
                     try
                     {
-                        ShowBalloonTip("提示", "正则安装python依赖，请稍等片刻...", 10000);
+                        ShowBalloonTip("提示", "正在安装python依赖，请稍等片刻...", 10000);
 
                         // 解压依赖包到一个随机的临时目录
                         string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
