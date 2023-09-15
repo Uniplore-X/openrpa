@@ -79,7 +79,7 @@ namespace OpenRPA.Script.Activities
         ///         </code>
         ///     </item>
         /// </list>
-        /// </remarks> 
+        /// </remarks>
         public static List<ToolboxCategory> LoadScriptActivities()
         {
             Log.Information("load script activities...");
@@ -98,7 +98,7 @@ namespace OpenRPA.Script.Activities
             return list;
         }
 
-        
+
         private static void LoadFromLocal(List<ToolboxCategory> list)
         {
             Log.Information("load local script activities...");
@@ -222,7 +222,7 @@ namespace OpenRPA.Script.Activities
 
             Log.Information("load local script activities end.");
         }
-        
+
         private static string ReadFileContent(string file)
         {
             string content;
@@ -279,7 +279,7 @@ namespace OpenRPA.Script.Activities
                     break;
             }
 
-            
+
             string name = (string)activityObject["name"];
             string displayName = activityObject.ContainsKey("displayName") ? (string)activityObject["displayName"] : name;
             string fileName = (string)activityObject["fileName"];
