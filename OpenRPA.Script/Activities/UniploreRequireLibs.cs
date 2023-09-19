@@ -110,7 +110,7 @@ namespace OpenRPA.Script
                         // Python.Runtime.PythonEngine.Initialize();
                         //_ = Python.Runtime.PythonEngine.BeginAllowThreads();
                        
-                        InvokeCode.InitPython();
+                        /*InvokeCode.InitPython();
                         using (Python.Runtime.Py.GIL())
                         {
                             //var scope = Python.Runtime.Py.CreateScope();
@@ -118,7 +118,7 @@ namespace OpenRPA.Script
                             //PythonEngine.RunSimpleString("import sys\n\nfor k in sys.modules.keys():\n  del sys.modules[k]\n");
                             var rpatest = Py.Import("uniplore_rpatest.webdriver");
                             Log.Information("uniplore_rpatest: " + rpatest);
-                        }
+                        }*/
 
                         ShowBalloonTip("提示", "python依赖安装完成");
                         hasChecked = true;
