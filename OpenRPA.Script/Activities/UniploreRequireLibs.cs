@@ -101,24 +101,12 @@ namespace OpenRPA.Script
                         }
 
                         Directory.Delete(tempDirectory, true);
-
-
-                        // 测试是否安装成功, 同时能解决首次安装后无法找到模块的问题
-                        //PythonEngine.Shutdown();
-                        //Python.Included.Installer.SetupPython(false).Wait();
-
-                        // Python.Runtime.PythonEngine.Initialize();
-                        //_ = Python.Runtime.PythonEngine.BeginAllowThreads();
                        
-                        /*InvokeCode.InitPython();
-                        using (Python.Runtime.Py.GIL())
-                        {
-                            //var scope = Python.Runtime.Py.CreateScope();
-                            //scope.Reload();
-                            //PythonEngine.RunSimpleString("import sys\n\nfor k in sys.modules.keys():\n  del sys.modules[k]\n");
-                            var rpatest = Py.Import("uniplore_rpatest.webdriver");
-                            Log.Information("uniplore_rpatest: " + rpatest);
-                        }*/
+                        //InvokeCode.InitPython();
+                        //using (Python.Runtime.Py.GIL())
+                        //{
+                        //    PythonEngine.RunSimpleString("import importlib\n\nimportlib.invalidate_caches()\n");
+                        //}
 
                         ShowBalloonTip("提示", "python依赖安装完成");
                         hasChecked = true;
