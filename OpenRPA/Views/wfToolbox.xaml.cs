@@ -71,7 +71,7 @@ namespace OpenRPA.Views
             }
         }
 
-        private string getDisplayName(Type type)
+        private string getDisplayName(Type type, string libraryName)
         {
             string displayName = type.Name;
             string[] splitName = displayName.Split('`');
@@ -80,42 +80,63 @@ namespace OpenRPA.Views
             if (displayNameAttribute != null) displayName = displayNameAttribute.DisplayName;
             if (splitName.Length > 1) displayName = string.Format("{0}<>", displayName);
 
-            displayName = GetCustomerName(displayName, type.Module.Name);
+            displayName = GetCustomerName(displayName, libraryName);
 
             return displayName;
         }
 
-        private string GetCustomerName(string originName, string libraryName = null)
+        private string GetCustomerName(string originName, string libraryName = null, string partName = "toolbox")
         {
-            string displayName = originName;
-            if (customerDisplayNames != null && customerDisplayNames.ContainsKey("toolbox"))
+            string displayName = null;
+            bool log = false;
+
+            if (customerDisplayNames != null && customerDisplayNames.ContainsKey(partName))
             {
-                if(libraryName == null)
+                if (customerDisplayNames.ContainsKey("log"))
                 {
-                    libraryName = originName;
+                    log = (bool)customerDisplayNames["log"];
                 }
 
-                JObject toolbox = (JObject)customerDisplayNames["toolbox"];
+                JObject toolbox = (JObject)customerDisplayNames[partName];
 
-                if (!toolbox.ContainsKey(libraryName))
-                {
-                    libraryName = "*";
-                }
-
-                if (toolbox.ContainsKey(libraryName))
+                if (libraryName != null && toolbox.ContainsKey(libraryName))
                 {
                     JObject names = (JObject)toolbox[libraryName];
                     if (names.ContainsKey(originName))
                     {
-                        string customerName = (string)names[displayName];
+                        string customerName = (string)names[originName];
                         if (customerName?.Length > 0)
                         {
                             displayName = customerName;
                         }
                     }
- 
+                }
+
+                if (displayName == null && libraryName != "*" && toolbox.ContainsKey("*"))
+                {
+                    JObject names = (JObject)toolbox["*"];
+                    if (names.ContainsKey(originName))
+                    {
+                        string customerName = (string)names[originName];
+                        if (customerName?.Length > 0)
+                        {
+                            displayName = customerName;
+                        }
+                    }
                 }
             }
+
+            if (displayName == null)
+            {
+                displayName = originName;
+            }
+
+            if (log)
+            {
+                Log.Information($"libraryName={libraryName}, originName={originName}, displayName={displayName}");
+            }
+
+
             return displayName;
         }
 
@@ -147,7 +168,7 @@ namespace OpenRPA.Views
                         };
                         // , "ParallelForEach", "ParallelForEachWithBodyFactory", "ForEachWithBodyFactory"
 
-                        var wfToolboxCategory = new ToolboxCategory(GetCustomerName(activityLibrary.GetName().Name));
+                        var wfToolboxCategory = new ToolboxCategory(GetCustomerName(activityLibrary.GetName().Name, activityLibrary.GetName().Name));
                         var actvities = from
                                             activityType in activityLibrary.GetExportedTypes()
                                         where
@@ -192,7 +213,7 @@ namespace OpenRPA.Views
                                         orderby
                                             activityType.Name
                                         select
-                                            new ToolboxItemWrapper(activityType, getDisplayName(activityType));
+                                            new ToolboxItemWrapper(activityType, getDisplayName(activityType, activityLibrary.GetName().Name));
 
 
                         // , activityType.Name.Replace("`1", "")
