@@ -1,4 +1,5 @@
-﻿using OpenRPA.Interfaces;
+﻿using Newtonsoft.Json.Linq;
+using OpenRPA.Interfaces;
 using System;
 using System.Activities;
 using System.Activities.Core.Presentation;
@@ -26,6 +27,8 @@ namespace OpenRPA.Views
     /// </summary>
     public partial class WFToolbox : UserControl
     {
+        private JObject customerDisplayNames = null;
+
         // public ToolboxControl toolbox { get; set; } = null;
         public WFToolbox()
         {
@@ -38,6 +41,36 @@ namespace OpenRPA.Views
             Instance = this;
         }
         public static WFToolbox Instance = null;
+
+        private void LoadCustomerDisplayNames(IEnumerable<System.Reflection.Assembly> appAssemblies)
+        {
+            Type uniploreRequireLibsType = null;
+            foreach (System.Reflection.Assembly activityLibrary in appAssemblies.Where(p => !p.IsDynamic))
+            {
+                if (activityLibrary.GetName().Name == "OpenRPA.Script")
+                {
+                    foreach (var type in activityLibrary.GetExportedTypes())
+                    {
+                        if (type.Name == "UniploreRequireLibs")
+                        {
+                            uniploreRequireLibsType = type;
+                            break;
+                        }
+                    }
+                }
+
+                if (uniploreRequireLibsType != null)
+                {
+                    break;
+                }
+            }
+
+            if (uniploreRequireLibsType != null)
+            {
+                customerDisplayNames = (JObject)uniploreRequireLibsType.GetMethod("GetCustomerDisplayNameConfig").Invoke(null, new object[] { });
+            }
+        }
+
         private string getDisplayName(Type type)
         {
             string displayName = type.Name;
@@ -46,8 +79,46 @@ namespace OpenRPA.Views
             var displayNameAttribute = type.GetCustomAttributes(typeof(System.ComponentModel.DisplayNameAttribute), true).FirstOrDefault() as System.ComponentModel.DisplayNameAttribute;
             if (displayNameAttribute != null) displayName = displayNameAttribute.DisplayName;
             if (splitName.Length > 1) displayName = string.Format("{0}<>", displayName);
+
+            displayName = GetCustomerName(displayName, type.Module.Name);
+
             return displayName;
         }
+
+        private string GetCustomerName(string originName, string libraryName = null)
+        {
+            string displayName = originName;
+            if (customerDisplayNames != null && customerDisplayNames.ContainsKey("toolbox"))
+            {
+                if(libraryName == null)
+                {
+                    libraryName = originName;
+                }
+
+                JObject toolbox = (JObject)customerDisplayNames["toolbox"];
+
+                if (!toolbox.ContainsKey(libraryName))
+                {
+                    libraryName = "*";
+                }
+
+                if (toolbox.ContainsKey(libraryName))
+                {
+                    JObject names = (JObject)toolbox[libraryName];
+                    if (names.ContainsKey(originName))
+                    {
+                        string customerName = (string)names[displayName];
+                        if (customerName?.Length > 0)
+                        {
+                            displayName = customerName;
+                        }
+                    }
+ 
+                }
+            }
+            return displayName;
+        }
+
         public void InitializeActivitiesToolbox()
         {
             Log.FunctionIndent("WFToolbox", "InitializeActivitiesToolbox");
@@ -57,6 +128,8 @@ namespace OpenRPA.Views
                 // get all loaded assemblies
                 IEnumerable<System.Reflection.Assembly> appAssemblies = AppDomain.CurrentDomain.GetAssemblies().OrderBy(a => a.GetName().Name)
                     .Where(a => a.GetName().Name != "System.ServiceModel.Activities");
+
+                LoadCustomerDisplayNames(appAssemblies);
 
                 // check if assemblies contain activities
                 int activitiesCount = 0;
@@ -74,7 +147,7 @@ namespace OpenRPA.Views
                         };
                         // , "ParallelForEach", "ParallelForEachWithBodyFactory", "ForEachWithBodyFactory"
 
-                        var wfToolboxCategory = new ToolboxCategory(activityLibrary.GetName().Name);
+                        var wfToolboxCategory = new ToolboxCategory(GetCustomerName(activityLibrary.GetName().Name));
                         var actvities = from
                                             activityType in activityLibrary.GetExportedTypes()
                                         where
@@ -137,10 +210,10 @@ namespace OpenRPA.Views
                         }
 
                         if (scriptActivitiesType == null && activityLibrary.GetName().Name == "OpenRPA.Script")
-                        { 
+                        {
                             foreach (var type in activityLibrary.GetExportedTypes())
                             {
-                                if(type.Name== "ScriptActivities")
+                                if (type.Name == "ScriptActivities")
                                 {
                                     scriptActivitiesType = type;
                                     break;
@@ -154,7 +227,7 @@ namespace OpenRPA.Views
                     }
                 }
 
-                if(scriptActivitiesType != null)
+                if (scriptActivitiesType != null)
                 {// load uniplore dynamic script activities
                     List<ToolboxCategory> finalList = new List<ToolboxCategory>();
                     List<ToolboxCategory> saCategories = (List<ToolboxCategory>)scriptActivitiesType.GetMethod("LoadScriptActivities").Invoke(null, new object[] { });

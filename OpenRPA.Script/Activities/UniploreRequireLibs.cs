@@ -3,17 +3,75 @@ using System.IO;
 using System.IO.Compression;
 using System.Diagnostics;
 
-using Python.Runtime;
 using OpenRPA.Interfaces;
 using System.Windows.Forms;
 using System.Drawing;
-using OpenRPA.Script.Activities;
+using Newtonsoft.Json.Linq;
+using System.Text;
 
 namespace OpenRPA.Script
 {
-    internal class UniploreRequireLibs
+    public class UniploreRequireLibs
     {
         private static bool hasChecked = false;
+
+        public static JObject GetCustomerDisplayNameConfig()
+        {
+            string host;
+            if (string.IsNullOrEmpty(Config.local.wsurl))
+            {
+                host = "offline";
+            }
+            else
+            {
+                var uri = new Uri(Config.local.wsurl);
+                host = uri.Host;
+            }
+            var fi = new FileInfo(Config.SettingsFile);
+            var baseDir = Path.Combine(fi.Directory.FullName, "script-activities", host);
+            if (!Directory.Exists(baseDir))
+            {
+                Log.Information("create script-activities dir: " + baseDir);
+                Directory.CreateDirectory(baseDir);
+            }
+
+            var configFile = Path.Combine(baseDir, "customer-names.json");
+            JObject configObject = null;
+            if (File.Exists(configFile))
+            {
+                Log.Information("load customer names config: " + configFile);
+                try
+                {
+                    var content = ReadFileContent(configFile);
+                    configObject = JObject.Parse(content);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "load customer names config error: " + configFile);
+                }
+            }
+
+            if(configObject == null)
+            {
+                configObject = new JObject();
+            }
+
+            return configObject;
+        }
+
+        public static string ReadFileContent(string file)
+        {
+            string content;
+            using (FileStream stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                {
+                    content = reader.ReadToEnd();
+                }
+            }
+
+            return content;
+        }
 
         public static void ShowBalloonTip(string title, string content, int timeout=5000, ToolTipIcon icon= ToolTipIcon.Info)
         {
@@ -110,6 +168,7 @@ namespace OpenRPA.Script
 
                         ShowBalloonTip("提示", "python依赖安装完成");
                         hasChecked = true;
+                        Log.Information("python home: " + pyHome);
                     }
                     catch(Exception ex)
                     {
