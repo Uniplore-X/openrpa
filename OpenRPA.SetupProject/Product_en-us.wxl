@@ -3,10 +3,10 @@
   <String Id="Language">1033</String>
   <!-- Supported language and codepage codes can be found here: http://www.tramontana.co.hu/wix/lesson2.php#2.4 -->
 
-  <String Id="ApplicationName">Uniplore OpenRPA</String>
-  <String Id="ManufacturerName">Uniplore OpenRPA ApS</String>
-  <String Id="ManufacturerFullName">Uniplore OpenRPA ApS</String>
+  <String Id="ApplicationName">Uniplore RPA</String>
+  <String Id="ManufacturerName">Uniplore RPA ApS</String>
+  <String Id="ManufacturerFullName">Uniplore RPA ApS</String>
   <String Id="ProductDescription">Open Source Enterprise RPA solution</String>
-  <String Id="Comments">Installs Uniplore OpenRPA software</String>
+  <String Id="Comments">Installs Uniplore RPA software</String>
 
 </WixLocalization>

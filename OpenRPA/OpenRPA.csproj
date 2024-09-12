@@ -8,7 +8,7 @@
 		<StartupObject />
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<!--<NuspecFile>nuget.nuspec</NuspecFile>-->
-		<Description>Base UI of Uniplore OpenRPA, used as part of Uniplore OpenRPA robot</Description>
+		<Description>Base UI of Uniplore RPA, used as part of Uniplore RPA robot</Description>
 		<PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/Uniplore-X/openrpa</PackageProjectUrl>
 		<Version>1.4.55</Version>

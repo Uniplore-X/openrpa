@@ -61,8 +61,8 @@ git submodule update --init
    - 下载文件，不使用baseurl
 
 ### 生成msi安装包
-1. 安装.net framework v3.5（依赖v2.0与v3.0，安装时会自动下载安装）
-2. 安装WiX（[本次安装版本是v3.11.2](https://wixtoolset.org/docs/wix3/)，依赖.net framework v3.5）
+1. 安装.net framework v3.5（依赖v2.0与v3.0，安装时会自动下载安装，另外可能需手动安装nuget并设置到PATH环境变量[nuget](https://www.nuget.org/downloads)）
+2. 安装WiX（[本次安装版本是v3.11.2](https://wixtoolset.org/docs/wix3/)，依赖.net framework v3.5，若是其他版本需将WiX的bin目录添加的PATH环境变量）
 3. 重新打开项目，可能需要重新加载`OpenRPA.SetupActions`与`OpenRPA.SetupProject`等项目
 4. 将`OpenRPA`切换到`Release`，在解决方案中，右键项目名为`OpenRPA`的子项目、点击`打包`，生成Release文件（在项目根目录下会出现`dist`目录）
    ![alt 生成](./uniplore/build-openrpa-pkg.png)
