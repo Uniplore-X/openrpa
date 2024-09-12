@@ -5,19 +5,19 @@
 !include "StrRep.nsh"
 !include "ReplaceInFile.nsh"
 
-Name "UniploreOpenRPA"
-OutFile "UniploreOpenRPA.exe"
-InstallDir $PROGRAMFILES\OpenRPA
+Name "UniploreRPA"
+OutFile "UniploreRPA.exe"
+InstallDir $PROGRAMFILES\UniploreRPA
 function .onInit
     ${If} ${RunningX64}
         SetRegView 64
-        StrCpy $INSTDIR "$PROGRAMFILES64\OpenRPA"
+        StrCpy $INSTDIR "$PROGRAMFILES64\UniploreRPA"
     ${EndIf}
 functionEnd
 
 ; Registry key to check for directory (so if you install again, it will 
 ; overwrite the old one automatically)
-InstallDirRegKey HKLM "Software\OpenRPA" "Install_Dir"
+InstallDirRegKey HKLM "Software\UniploreRPA" "Install_Dir"
 ; Request application privileges for Windows Vista
 RequestExecutionLevel admin
 
@@ -126,25 +126,25 @@ Section "Base robot files" ; section 0
   File /r "C:\code\openrpa\OpenRPA\bin\PrepInstaller\net462\*"
   File /r "C:\code\openrpa\OpenRPA.Utilities\bin\PrepInstaller\net462\*"  
 
-  WriteRegStr HKLM SOFTWARE\OpenRPA "Install_Dir" "$INSTDIR"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenRPA" "DisplayName" "OpenRPA"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenRPA" "UninstallString" '"$INSTDIR\uninstall.exe"'
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenRPA" "NoModify" 1
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenRPA" "NoRepair" 1
+  WriteRegStr HKLM SOFTWARE\UniploreRPA "Install_Dir" "$INSTDIR"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\UniploreRPA" "DisplayName" "UniploreRPA"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\UniploreRPA" "UninstallString" '"$INSTDIR\uninstall.exe"'
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\UniploreRPA" "NoModify" 1
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\UniploreRPA" "NoRepair" 1
   WriteUninstaller "$INSTDIR\uninstall.exe"
 SectionEnd
 
 Section "Start Menu Shortcuts" ; section 1
-  CreateDirectory "$SMPROGRAMS\OpenRPA"
-  CreateShortcut "$SMPROGRAMS\OpenRPA\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
-  CreateShortcut "$SMPROGRAMS\OpenRPA\OpenRPA.lnk" "$INSTDIR\OpenRPA.exe" "" "$INSTDIR\OpenRPA.exe" 0
+  CreateDirectory "$SMPROGRAMS\UniploreRPA"
+  CreateShortcut "$SMPROGRAMS\UniploreRPA\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
+  CreateShortcut "$SMPROGRAMS\UniploreRPA\OpenRPA.lnk" "$INSTDIR\OpenRPA.exe" "" "$INSTDIR\OpenRPA.exe" 0
 SectionEnd
 
 Section "Uninstall"
-  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenRPA"
-  DeleteRegKey HKLM SOFTWARE\OpenRPA
-  Delete "$SMPROGRAMS\OpenRPA\*.*"
-  RMDir "$SMPROGRAMS\OpenRPA"
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\UniploreRPA"
+  DeleteRegKey HKLM SOFTWARE\UniploreRPA
+  Delete "$SMPROGRAMS\UniploreRPA\*.*"
+  RMDir "$SMPROGRAMS\UniploreRPA"
   RMDir /r /REBOOTOK "$INSTDIR"
 SectionEnd
 

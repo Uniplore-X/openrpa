@@ -22,10 +22,10 @@
 		<Company>Uniplore</Company>
 		<UserSecretsId>67d03aca-cfb1-4f1c-9efa-111ce7476743</UserSecretsId>
 		<PackageId>OpenRPA</PackageId>
-		<Product>UniploreOpenRPA</Product>
+		<Product>UniploreRPA</Product>
 		<AssemblyName>OpenRPA</AssemblyName>
 		<RootNamespace>OpenRPA</RootNamespace>
-		<Title>UniploreOpenRPA</Title>
+		<Title>UniploreRPA</Title>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<OutputPath>..\debug</OutputPath>

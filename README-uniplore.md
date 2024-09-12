@@ -32,7 +32,7 @@ git submodule update --init
 
 
 ### 配置修改
-在`UniploreOpenRPA`中增加配置项`settings.json`
+在`UniploreRPA`中增加配置项`settings.json`
 ```json
 {
   "noweblogin": false,

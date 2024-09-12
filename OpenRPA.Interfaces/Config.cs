@@ -221,9 +221,9 @@ namespace OpenRPA
                 var _fileName = System.IO.Path.GetFileName(filename);
                 var di = fi.Directory;
                 var MyDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                var MyDocumentsOpenRPA = System.IO.Path.Combine(MyDocuments, "OpenRPA");
+                var MyDocumentsOpenRPA = System.IO.Path.Combine(MyDocuments, "UniploreRPA");
                 var AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                var AppDataOpenRPA = System.IO.Path.Combine(AppData, "OpenRPA");
+                var AppDataOpenRPA = System.IO.Path.Combine(AppData, "UniploreRPA");
 
                 if (System.IO.File.Exists(System.IO.Path.Combine(AppDataOpenRPA, "settings.json")))
                 {
@@ -384,7 +384,7 @@ namespace OpenRPA
                     hasLocalMachine = false;
                     try
                     {
-                        rk = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\OpenRPA", false);
+                        rk = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\UniplreRPA", false);
                         if (rk != null) hasLocalMachine = true;
                     }
                     catch (Exception)
@@ -395,7 +395,7 @@ namespace OpenRPA
                 {
                     try
                     {
-                        rk = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\OpenRPA", false);
+                        rk = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\UniplreRPA", false);
                     }
                     catch (Exception)
                     {
@@ -416,7 +416,7 @@ namespace OpenRPA
                     hasCurrentUser = false;
                     try
                     {
-                        rk = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"SOFTWARE\OpenRPA", false);
+                        rk = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"SOFTWARE\UniplreRPA", false);
                         if (rk != null) hasCurrentUser = true;
                     }
                     catch (Exception)
@@ -425,7 +425,7 @@ namespace OpenRPA
                 }
                 else if (hasCurrentUser == true)
                 {
-                    rk = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"SOFTWARE\OpenRPA", false);
+                    rk = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"SOFTWARE\UniplreRPA", false);
                 }
                 if (rk != null)
                 {

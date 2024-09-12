@@ -5,7 +5,7 @@
     },
     "1212": {
       "commandName": "Executable",
-      "executablePath": "C:\\Program Files\\OpenRPA\\OpenRPA.JavaBridge.exe"
+      "executablePath": "C:\\Program Files\\UniploreRPA\\OpenRPA.JavaBridge.exe"
     }
   }
 }

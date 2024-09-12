@@ -6,9 +6,9 @@
     },
     "ttttt": {
       "commandName": "Executable",
-      "executablePath": "C:\\Program Files\\OpenRPA\\OpenRPA.exe",
+      "executablePath": "C:\\Program Files\\UniploreRPA\\OpenRPA.exe",
       "commandLineArgs": "/workflowid SDEMO\\New_Workflow3.xaml",
-      "workingDirectory": "C:\\Program Files\\OpenRPA"
+      "workingDirectory": "C:\\Program Files\\UniploreRPA"
     }
   }
 }

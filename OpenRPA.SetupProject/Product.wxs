@@ -165,8 +165,8 @@
 		<DirectoryRef Id="ApplicationProgramsFolder">
 			<Component Id="ApplicationShortcut" Guid="$(var.UpgradeCode)" Feature="MainFeature">
 				<Shortcut Id="ApplicationStartMenuShortcut"
-						  Name="UniploreOpenRPA"
-						  Description="UniploreOpenRPA"
+						  Name="UniploreRPA"
+						  Description="UniploreRPA"
 						  Target="[#openrpaExe]"
 						  WorkingDirectory="INSTALLDIR"/>
 				<RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall"/>
@@ -234,17 +234,17 @@
 	<Fragment>
 		<Directory Id="TARGETDIR" Name="SourceDir">
 			<Directory Id="LocalAppDataFolder">
-				<!--<Directory Id="INSTALLDIR2" Name="OpenRPA" />-->
+				<!--<Directory Id="INSTALLDIR2" Name="UniploreRPA" />-->
 				<!--<Component Id="MainFeature" Guid="*">
         </Component>-->
 
 			</Directory>
 			<Directory Id="ProgramFiles64Folder">
-				<Directory Id="INSTALLDIR" Name="OpenRPA" />
+				<Directory Id="INSTALLDIR" Name="UniploreRPA" />
 			</Directory>
 
 			<Directory Id="ProgramMenuFolder">
-				<Directory Id="ApplicationProgramsFolder" Name="OpenRPA"/>
+				<Directory Id="ApplicationProgramsFolder" Name="UniploreRPA"/>
 			</Directory>
 		</Directory>
 

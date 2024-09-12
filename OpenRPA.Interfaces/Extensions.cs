@@ -318,7 +318,7 @@ namespace OpenRPA.Interfaces
         {
             get
             {
-                var dir = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "OpenRPA");
+                var dir = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "UniploreRPA");
                 if (!System.IO.Directory.Exists(System.IO.Path.Combine(dir)))
                     System.IO.Directory.CreateDirectory(dir);
                 return dir;
@@ -331,9 +331,9 @@ namespace OpenRPA.Interfaces
             {
                 if (!string.IsNullOrEmpty(_ProjectsDirectory)) return _ProjectsDirectory;
                 var MyDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                var MyDocumentsOpenRPA = System.IO.Path.Combine(MyDocuments, "OpenRPA");
+                var MyDocumentsOpenRPA = System.IO.Path.Combine(MyDocuments, "UniploreRPA");
                 var AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                var AppDataOpenRPA = System.IO.Path.Combine(AppData, "OpenRPA");
+                var AppDataOpenRPA = System.IO.Path.Combine(AppData, "UniploreRPA");
                 _ProjectsDirectory = MyDocumentsOpenRPA;
                 if (System.IO.File.Exists(System.IO.Path.Combine(AppDataOpenRPA, "settings.json")))
                 {
