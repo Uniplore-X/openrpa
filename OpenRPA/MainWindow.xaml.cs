@@ -168,7 +168,7 @@ namespace OpenRPA
                     {
                         Log.Error(ex.ToString());
                     }
-                });
+                }, 10000);
             }
             Log.FunctionOutdent("MainWindow", "MainWindow_WebSocketClient_OnOpen");
         }
@@ -431,17 +431,9 @@ namespace OpenRPA
             InputDriver.Instance.Dispose();
             StopDetectorPlugins();
             SaveLayout();
-            if (RobotInstance.instance.db != null)
+            foreach (var s in Plugins.Storages)
             {
-                try
-                {
-                    RobotInstance.instance.db.Dispose();
-                    RobotInstance.instance.db = null;
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex.ToString());
-                }
+                s.Dispose();
             }
             // automation threads will not allways abort, and mousemove hook will "hang" the application for several seconds
             Application.Current.Shutdown();
@@ -450,6 +442,7 @@ namespace OpenRPA
         private void Window_StateChanged(object sender, EventArgs e)
         {
             Log.FunctionIndent("MainWindow", "Window_StateChanged");
+            if (!Config.local.minimize_to_tray) return;
             if (WindowState == WindowState.Minimized)
             {
                 Visibility = Visibility.Hidden;
@@ -859,8 +852,7 @@ namespace OpenRPA
             {
                 if (string.IsNullOrEmpty(Config.local.wsurl)) return "";
                 if (global.webSocketClient == null) return "null";
-                if (global.webSocketClient.ws == null) return "ws null";
-                return global.webSocketClient.ws.State.ToString();
+                return global.webSocketClient.State.ToString();
             }
         }
         public string wsmsgqueue
@@ -869,7 +861,6 @@ namespace OpenRPA
             {
                 if (string.IsNullOrEmpty(Config.local.wsurl)) return "";
                 if (global.webSocketClient == null) return "";
-                if (global.webSocketClient.ws == null) return "";
                 if (global.webSocketClient.MessageQueueSize == 0) return "";
                 return "(" + global.webSocketClient.MessageQueueSize.ToString() + ")";
             }
@@ -1308,7 +1299,7 @@ namespace OpenRPA
                             {
                                 _wiq._acl = p._acl;
                                 _wiq.isDirty = true;
-                                RobotInstance.instance.dbWorkItemQueues.Update(_wiq);
+                                await StorageProvider.Update(_wiq);
                             }
                             await p.Save();
                         }
@@ -2232,7 +2223,7 @@ namespace OpenRPA
                 {
                     Log.Error(ex.ToString());
                 }
-            });
+            }, 10000);
             //Task.Run(() =>
             //{
             //    var sw = new System.Diagnostics.Stopwatch(); sw.Start();
@@ -2479,7 +2470,16 @@ namespace OpenRPA
         {
             try
             {
-                return (SelectedContent is Views.WFDesigner);
+                if (SelectedContent is Views.WFDesigner) return true;
+                if (SelectedContent is Views.OpenProject view)
+                {
+                    var val = view.listWorkflows.SelectedValue;
+                    if (val is Workflow wf)
+                    {
+                        return true;
+                    }
+                }
+                return false;
             }
             catch (Exception ex)
             {
@@ -2492,14 +2492,34 @@ namespace OpenRPA
             Log.FunctionIndent("MainWindow", "OnCopy");
             try
             {
-                var designer = (Views.WFDesigner)SelectedContent;
-                await designer.SaveAsync();
-                Workflow workflow = await Workflow.Create(designer.Workflow.Project(), "Copy of " + designer.Workflow.name);
-                var xaml = designer.Workflow.Xaml;
-                xaml = Views.WFDesigner.SetWorkflowName(xaml, workflow.name);
-                workflow.Xaml = xaml;
-                workflow.name = "Copy of " + designer.Workflow.name;
-                _onOpenWorkflow(workflow, true);
+                string xaml = "";
+                Workflow workflow = null;
+                if (SelectedContent is Views.WFDesigner)
+                {
+                    var designer = (Views.WFDesigner)SelectedContent;
+                    await designer.SaveAsync();
+                    xaml = designer.Workflow.Xaml;
+                    workflow = await Workflow.Create(designer.Workflow.Project(), "Copy of " + designer.Workflow.name);
+                    workflow.name = "Copy of " + designer.Workflow.name;
+                    xaml = await Interfaces.Image.Util.LoadImages(xaml);
+                    xaml = Views.WFDesigner.SetWorkflowName(xaml, workflow.name);
+                    workflow.Xaml = xaml;
+                    _onOpenWorkflow(workflow, true);
+                }
+                if (SelectedContent is Views.OpenProject view)
+                {
+                    var val = view.listWorkflows.SelectedValue;
+                    if (val is Workflow wf)
+                    {
+                        xaml = wf.Xaml;
+                        workflow = await Workflow.Create(wf.Project(), "Copy of " + wf.name);
+                        workflow.name = "Copy of " + wf.name;
+                        xaml = await Interfaces.Image.Util.LoadImages(xaml);
+                        xaml = Views.WFDesigner.SetWorkflowName(xaml, workflow.name);
+                        workflow.Xaml = xaml;
+                        await workflow.Save();
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -3486,7 +3506,7 @@ namespace OpenRPA
                 GenericTools.RunUI(() =>
                 {
                     CommandManager.InvalidateRequerySuggested();
-                });
+                }, 100);
             }
 
             try
@@ -3695,6 +3715,7 @@ namespace OpenRPA
                     {
                         item.designer.NavigateTo(item.originalitem);
                     }
+                    RobotInstance.instance.FilterText = SearchBox.Text;
                 }
                 catch (Exception ex)
                 {

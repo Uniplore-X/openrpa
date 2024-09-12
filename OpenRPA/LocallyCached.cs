@@ -16,8 +16,6 @@ namespace OpenRPA
             try
             {
                 _backingFieldValues["_disabledirty"] = true;
-                if (RobotInstance.instance.db == null) return;
-                var collection = RobotInstance.instance.db.GetCollection<T>(_type.ToLower() + "s");
                 var entity = (T)Convert.ChangeType(this, typeof(T));
                 if (!global.isConnected )
                 {
@@ -92,7 +90,7 @@ namespace OpenRPA
                                 {
                                     if(result._id != entity._id && !string.IsNullOrEmpty(entity._id))
                                     {
-                                        collection.Delete(entity._id);
+                                        await StorageProvider.Delete<T>(entity._id);
                                     }
                                     if(_type != "workflowinstance")
                                     {
@@ -126,9 +124,9 @@ namespace OpenRPA
                     {
                         if(!string.IsNullOrEmpty(_id))
                         {
-                            var exists = collection.FindById(_id);
-                            if (exists != null) { collection.Update(entity); Log.Verbose("Updated in local db as version " + entity._version + " " + entity._type + " " + entity.name); }
-                            if (exists == null) { collection.Insert(entity); Log.Verbose("Inserted in local db as version  " + entity._version + " " + entity._type + " " + entity.name); }
+                            var exists = await StorageProvider.FindById<T>(_id);
+                            if (exists != null) { await StorageProvider.Update(entity); Log.Verbose("Updated in local db as version " + entity._version + " " + entity._type + " " + entity.name); }
+                            if (exists == null) { await StorageProvider.Insert(entity); Log.Verbose("Inserted in local db as version  " + entity._version + " " + entity._type + " " + entity.name); }
                         }
                     }
                     finally
@@ -136,7 +134,14 @@ namespace OpenRPA
                         System.Threading.Monitor.Exit(savelock);
                     }
                 }
-                else { throw new LockNotReceivedException("Locally Cached savelock"); }
+                else { 
+                    if(Config.local.thread_exit_on_lock_timeout)
+                    {
+                        Log.Error("Locally Cached savelock");
+                        System.Environment.Exit(1);
+                    }
+                    throw new LockNotReceivedException("Locally Cached savelock"); 
+                }
             }
             catch (Exception)
             {
@@ -149,7 +154,6 @@ namespace OpenRPA
         }
         public async Task Delete<T>() where T : apibase
         {
-            var collection = RobotInstance.instance.db.GetCollection<T>(_type.ToLower() + "s");
             var entity = (T)Convert.ChangeType(this, typeof(T));
             if (!global.isConnected)
             {
@@ -161,14 +165,14 @@ namespace OpenRPA
                     {
                         try
                         {
-                            var exists = collection.FindById(_id);
+                            var exists = StorageProvider.FindById<T>(_id);
                             if (string.IsNullOrEmpty(Config.local.wsurl))
                             {
-                                if (exists != null) { collection.Delete(entity._id); Log.Verbose("Deleted from local " + entity._type + " " + entity.name); }
+                                if (exists != null) { await StorageProvider.Delete<T>(entity._id); Log.Verbose("Deleted from local " + entity._type + " " + entity.name); }
                             } else
                             {
-                                if (exists != null) { collection.Update(entity); Log.Verbose("Updated in local db as version " + entity._version + " " + entity._type + " " + entity.name); }
-                                if (exists == null) { collection.Insert(entity); Log.Verbose("Inserted in local db as version  " + entity._version + " " + entity._type + " " + entity.name); }
+                                if (exists != null) { await StorageProvider.Update(entity); Log.Verbose("Updated in local db as version " + entity._version + " " + entity._type + " " + entity.name); }
+                                if (exists == null) { await StorageProvider.Insert(entity); Log.Verbose("Inserted in local db as version  " + entity._version + " " + entity._type + " " + entity.name); }
                             }
                         }
                         finally
@@ -176,7 +180,14 @@ namespace OpenRPA
                             System.Threading.Monitor.Exit(savelock);
                         }
                     }
-                    else { throw new LockNotReceivedException("Locally Cached savelock"); }
+                    else {
+                        if (Config.local.thread_exit_on_lock_timeout)
+                        {
+                            Log.Error("Locally Cached savelock");
+                            System.Environment.Exit(1);
+                        }
+                        throw new LockNotReceivedException("Locally Cached savelock"); 
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -194,15 +205,22 @@ namespace OpenRPA
                 {
                     try
                     {
-                        var exists = collection.FindById(_id);
-                        if (exists != null) { collection.Delete(entity._id); Log.Verbose("Deleted in local db as version " + entity._version + " " + entity._type + " " + entity.name); }
+                        var exists = await StorageProvider.FindById<T>(_id);
+                        if (exists != null) { await StorageProvider.Delete<T>(entity._id); Log.Verbose("Deleted in local db as version " + entity._version + " " + entity._type + " " + entity.name); }
                     }
                     finally
                     {
                         System.Threading.Monitor.Exit(savelock);
                     }
                 }
-                else { throw new LockNotReceivedException("Locally Cached savelock"); }
+                else {
+                    if (Config.local.thread_exit_on_lock_timeout)
+                    {
+                        Log.Error("Locally Cached savelock");
+                        System.Environment.Exit(1);
+                    }
+                    throw new LockNotReceivedException("Locally Cached savelock"); 
+                }
             }
         }
     }

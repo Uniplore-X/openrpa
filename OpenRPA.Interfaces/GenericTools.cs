@@ -39,7 +39,7 @@ namespace OpenRPA.Interfaces
                 {
                     Log.Error(ex.ToString());
                 }
-            });
+            }, 1000);
         }
         public static void Minimize(IntPtr hWnd)
         {
@@ -85,7 +85,7 @@ namespace OpenRPA.Interfaces
                 {
                     Log.Error(ex.ToString());
                 }
-            });
+            }, 1000);
         }
         public static void Restore(System.Windows.Window window)
         {
@@ -108,7 +108,7 @@ namespace OpenRPA.Interfaces
                 {
                     Log.Error(ex.ToString());
                 }
-            });
+            }, 1000);
         }
         public static void Restore(IntPtr hWnd)
         {
@@ -168,43 +168,50 @@ namespace OpenRPA.Interfaces
             }
         }
         private static readonly object statelock = new object();
-        public static void RunUI(Action action)
+        public static void RunUI(Action action, int timeout_ms = 10000)
         {
-            try
+            if (System.Windows.Application.Current == null || System.Windows.Application.Current.Dispatcher.CheckAccess())
             {
-                if (System.Threading.Monitor.TryEnter(statelock, 10))
+                action();
+            } else
+            {
+                try
                 {
-                    try
+                    if (System.Threading.Monitor.TryEnter(statelock, timeout_ms))
                     {
-                        if (AutomationHelper.syncContext == null)
+                        try
                         {
-                            AutomationHelper.syncContext = System.Threading.SynchronizationContext.Current;
-                        }
-                        AutomationHelper.syncContext.Send(o =>
-                        {
-                            try
+                            if (AutomationHelper.syncContext == null)
                             {
-                                action();
+                                AutomationHelper.syncContext = System.Threading.SynchronizationContext.Current;
                             }
-                            catch (Exception ex)
+                            AutomationHelper.syncContext.Send(o =>
                             {
-                                Log.Error(ex.ToString());
-                            }
-                        }, null);
+                                try
+                                {
+                                    action();
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Error(ex.ToString());
+                                }
+                            }, null);
 
+                        }
+                        finally
+                        {
+                            System.Threading.Monitor.Exit(statelock);
+                        }
                     }
-                    finally
-                    {
-                        System.Threading.Monitor.Exit(statelock);
+                    else { 
+                        // throw new LockNotReceivedException("Failed returning list of workflow instances"); 
+                        Log.Error("Failed getting exclusive UIThread lock");
                     }
                 }
-                else { 
-                    // throw new LockNotReceivedException("Failed returning list of workflow instances"); 
+                catch (Exception ex)
+                {
+                    Log.Error(ex.ToString());
                 }
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex.ToString());
             }
         }
         private delegate void SafeCallDelegate();

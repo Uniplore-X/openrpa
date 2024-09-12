@@ -164,7 +164,7 @@ namespace OpenRPA
                 assemblyPath = System.IO.Path.Combine(folderPath, new AssemblyName(args.Name).Name + ".dll");
                 if (System.IO.File.Exists(assemblyPath)) return Assembly.LoadFrom(assemblyPath);
 
-                folderPath = Interfaces.Extensions.ProjectsDirectory;
+                folderPath = Path.Combine(Interfaces.Extensions.ProjectsDirectory, "extensions");
                 assemblyPath = System.IO.Path.Combine(folderPath, new AssemblyName(args.Name).Name + ".dll");
                 if (System.IO.File.Exists(assemblyPath)) return Assembly.LoadFrom(assemblyPath);
 
@@ -234,9 +234,31 @@ namespace OpenRPA
                         Config.Save();
                     }
                 }
+
+                if (Config.local.restore_dependencies_on_startup)
+                {
+                    Log.Debug("Package restore on startup enabled -> cleaning existing extensions.");
+                    var extensionsPath = Path.Combine(Interfaces.Extensions.ProjectsDirectory, "extensions");
+                    if (Directory.Exists(extensionsPath))
+                    {
+                        foreach (var file in Directory.GetFiles(extensionsPath))
+                        {
+                            try
+                            {
+                                File.Delete(file);
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Error("Could not clean extension: " + ex.ToString());
+                            }
+                        }
+                    }
+                }
+
                 RobotInstance.instance.Status += App_Status;
                 Input.InputDriver.Instance.initCancelKey(Config.local.cancelkey);
                 Plugins.LoadPlugins(RobotInstance.instance, Interfaces.Extensions.PluginsDirectory, false);
+                RobotInstance.instance.Initialize();
             }
             catch (Exception ex)
             {

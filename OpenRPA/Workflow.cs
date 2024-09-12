@@ -158,29 +158,16 @@ namespace OpenRPA
             get { return GetProperty<bool>(); }
             set
             {
-                if (Views.OpenProject.isUpdating) return;
                 if (value == GetProperty<bool>()) return;
                 SetProperty(value);
+                if (Views.OpenProject.isUpdating) return;
                 if (!_backingFieldValues.ContainsKey("IsExpanded")) return;
                 if (!string.IsNullOrEmpty(_id) && !string.IsNullOrEmpty(name))
                 {
-                    var wf = RobotInstance.instance.dbWorkflows.FindById(_id);
-                    if (wf == null)
+                    Task.Run(async () =>
                     {
-                        RobotInstance.instance.Workflows.Remove(wf);
-                        return;
-                    }
-                    if (wf._version == _version)
-                    {
-                        Log.Verbose("Saving " + this.name + " with version " + this._version);
-                        RobotInstance.instance.dbWorkflows.Update(this);
-                    }
-                    else
-                    {
-                        Log.Verbose("Setting " + this.name + " with version " + this._version);
-                        wf.IsExpanded = value;
-                    }
-                    RobotInstance.instance.dbWorkflows.Update(this);
+                        await StorageProvider.Update<Workflow>(this);
+                    });
                 }
             }
         }
@@ -190,32 +177,16 @@ namespace OpenRPA
             get { return GetProperty<bool>(); }
             set
             {
-                if (Views.OpenProject.isUpdating) return;
                 if (value == GetProperty<bool>()) return;
                 SetProperty(value);
+                if (Views.OpenProject.isUpdating) return;
                 if (!_backingFieldValues.ContainsKey("IsSelected")) return;
                 if (!string.IsNullOrEmpty(_id) && !string.IsNullOrEmpty(name))
                 {
-                    if (!string.IsNullOrEmpty(_id) && !string.IsNullOrEmpty(name))
+                    Task.Run(async () =>
                     {
-                        var wf = RobotInstance.instance.dbWorkflows.FindById(_id);
-                        if (wf == null)
-                        {
-                            RobotInstance.instance.Workflows.Remove(wf);
-                            return;
-                        }
-                        if (wf._version == _version)
-                        {
-                            Log.Verbose("Saving " + this.name + " with version " + this._version);
-                            RobotInstance.instance.dbWorkflows.Update(this);
-                        }
-                        else
-                        {
-                            Log.Verbose("Setting " + this.name + " with version " + this._version);
-                            wf.IsSelected = value;
-                        }
-                        RobotInstance.instance.dbWorkflows.Update(this);
-                    }
+                        await StorageProvider.Update<Workflow>(this);
+                    });
                 }
             }
         }
@@ -293,7 +264,7 @@ namespace OpenRPA
                     });
 
                 }
-                GenericTools.RunUI(() => NotifyUIState());
+                GenericTools.RunUI(() => NotifyUIState(), 100);
             }
         }
         [JsonIgnore]
@@ -396,7 +367,7 @@ namespace OpenRPA
             workflow._id = Guid.NewGuid().ToString();
             workflow.isDirty = true;
             workflow.isLocalOnly = true;
-            RobotInstance.instance.dbWorkflows.Insert(workflow);
+            await StorageProvider.Insert(workflow);
             // await workflow.Save();
             await workflow.Save();
             return workflow;
@@ -439,7 +410,14 @@ namespace OpenRPA
                     System.Threading.Monitor.Exit(RobotInstance.instance.Workflows);
                 }
             }
-            else { throw new LockNotReceivedException("Failed saving workflow"); }
+            else {
+                if (Config.local.thread_exit_on_lock_timeout)
+                {
+                    Log.Error("Locally Cached savelock");
+                    System.Environment.Exit(1);
+                }
+                throw new LockNotReceivedException("Failed saving workflow"); 
+            }
         }
         public async Task Update(IWorkflow item, bool skipOnline = false)
         {
@@ -481,10 +459,10 @@ namespace OpenRPA
                     }
                     if (!skipOnline) await global.webSocketClient.DeleteOne("openrpa", this._id, "", "");
                 }
-                var exists = RobotInstance.instance.dbWorkflows.FindById(_id);
+                var exists = await StorageProvider.FindById<Workflow>(_id);
                 if (exists != null)
                 {
-                    RobotInstance.instance.dbWorkflows.Delete(_id);
+                    await StorageProvider.Delete<Workflow>(exists._id);
                 }
                 if (System.Threading.Monitor.TryEnter(RobotInstance.instance.Workflows, 1000))
                 {
@@ -497,7 +475,14 @@ namespace OpenRPA
                         System.Threading.Monitor.Exit(RobotInstance.instance.Workflows);
                     }
                 }
-                else { throw new LockNotReceivedException("Failed deleting workflow"); }
+                else {
+                    if (Config.local.thread_exit_on_lock_timeout)
+                    {
+                        Log.Error("Locally Cached savelock");
+                        System.Environment.Exit(1);
+                    }
+                    throw new LockNotReceivedException("Failed deleting workflow"); 
+                }
             }
             catch (Exception ex)
             {

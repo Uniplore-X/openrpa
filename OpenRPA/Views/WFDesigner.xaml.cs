@@ -362,8 +362,8 @@ namespace OpenRPA.Views
             modelService.ModelChanged -= new EventHandler<ModelChangedEventArgs>(ModelChanged);
             modelService.ModelChanged += new EventHandler<ModelChangedEventArgs>(ModelChanged);
 #if DEBUG
-            WorkflowDesigner.ContextMenu.Items.Add(runthis);
-            WorkflowDesigner.ContextMenu.Items.Add(runFromHere);
+            //WorkflowDesigner.ContextMenu.Items.Add(runthis);
+            //WorkflowDesigner.ContextMenu.Items.Add(runFromHere);
 #endif
             WorkflowDesigner.ContextMenu.Items.Add(comment);
             try
@@ -508,7 +508,7 @@ namespace OpenRPA.Views
                 Workflow.Xaml = WorkflowDesigner.Text;
                 var _hasChanged = HasChanged;
                 HasChanged = false;
-                RobotInstance.instance.dbWorkflows.Update(Workflow);
+                await StorageProvider.Update(Workflow);
                 await Workflow.Save();
                 if (_hasChanged)
                 {

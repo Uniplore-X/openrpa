@@ -5,6 +5,8 @@ Open Source Robotic Process Automation Software
 
 Download and try it out here [💾here](https://github.com/open-rpa/openrpa/releases/latest/download/OpenRPA.msi) and manage your [🔧OpenFlow account here](https://app.openiap.io)
 
+For windows 11, if OpenRPA does not start or crashes, try [💾here](https://github.com/open-rpa/openrpa/releases/latest/download/OpenRPA.py.3.11.4.msi) 
+
 Join our [🤷💻🤦 Community Forum](discourse.openiap.io/) for for help or giving feedback 
 
 Click here for [💲🤷Commercial Support](https://openiap.io/)
