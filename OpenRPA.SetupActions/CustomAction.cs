@@ -12,20 +12,31 @@ namespace OpenRPA.SetupActions
 
         private static bool IsOfficeInstalled()
         {
+            bool installed = false;
             var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Winword.exe");
             if (key != null)
             {
+                installed = true;
                 key.Close();
             }
-            return key != null;
+            else
+            {
+                key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Kingsoft\Office");
+                if (key != null)
+                {
+                    installed = true;
+                    key.Close();
+                }
+            }
+
+            return installed;
         }
 
         [CustomAction]
         public static ActionResult HasExcel(Session session)
         {
             session.Log("Begin CustomAction HasExcel");
-
-            if(IsOfficeInstalled())
+            if (IsOfficeInstalled())
             {
                 session.Log("set INSTALLOFFICEFEATURE to TRUE");
                 session["INSTALLOFFICEFEATURE"] = "TRUE";
@@ -157,7 +168,7 @@ namespace OpenRPA.SetupActions
                 }
             }
 
-            if(string.IsNullOrWhiteSpace(session["MSIINSTALLPERUSER"]))
+            if (string.IsNullOrWhiteSpace(session["MSIINSTALLPERUSER"]))
             {
                 session["WixAppFolder"] = "WixPerMachineFolder";
 
@@ -168,7 +179,7 @@ namespace OpenRPA.SetupActions
             }
 
             INSTALLDIR = session["INSTALLDIR"];
-            if(string.IsNullOrEmpty(INSTALLDIR))
+            if (string.IsNullOrEmpty(INSTALLDIR))
             {
 
                 try
@@ -177,23 +188,24 @@ namespace OpenRPA.SetupActions
                     if (peruser)
                     {
                         key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"SOFTWARE\OpenRPA");
-                    } else
+                    }
+                    else
                     {
                         key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\OpenRPA");
                     }
-                    if(key== null)
+                    if (key == null)
                     {
                         key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"SOFTWARE\OpenRPA");
                     }
                     if (key != null)
                     {
-                        if(peruser)
+                        if (peruser)
                         {
                             session["MSIUSEREALADMINDETECTION"] = "1";
                         }
                         INSTALLDIR = key.GetValue("InstallFolder") as string;
                         key.Close();
-                        if(!string.IsNullOrEmpty(INSTALLDIR))
+                        if (!string.IsNullOrEmpty(INSTALLDIR))
                         {
                             session["INSTALLDIR"] = INSTALLDIR;
                         }
