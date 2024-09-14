@@ -8,14 +8,152 @@ using System.Windows.Forms;
 using System.Drawing;
 using Newtonsoft.Json.Linq;
 using System.Text;
+using System.Collections.Generic;
 
 namespace OpenRPA.Script
 {
     public class UniploreRequireLibs
     {
         private static bool hasChecked = false;
+        private static JObject customerDisplayConfig = null;
+        private static ISet<string> hiddens = null;
+        private static bool logDisplayConfig = false;
 
-        public static JObject GetCustomerDisplayNameConfig()
+
+        public static void LoadCustomerDisplayConfig()
+        {
+            if (customerDisplayConfig == null)
+            {
+                customerDisplayConfig = GetCustomerDisplayConfig();
+                ISet<string> hiddenSet = new HashSet<string>();
+
+                try
+                {
+                    if (customerDisplayConfig.ContainsKey("instructs"))
+                    {
+                        JObject instructs = (JObject)customerDisplayConfig["instructs"];
+                        if (instructs.ContainsKey("hiddens"))
+                        {
+                            JArray hiddensArr = (JArray)instructs["hiddens"];
+                            foreach (var v in hiddensArr)
+                            {
+                                hiddenSet.Add((string)v);
+                            }
+                        }
+                    }
+
+                    if (customerDisplayConfig.ContainsKey("log"))
+                    {
+                        logDisplayConfig = (bool)customerDisplayConfig["log"];
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Warning("加载指令配置信息失败: " + ex.ToString());
+                }
+
+                hiddens = hiddenSet;
+            }
+        }
+
+        public static string GetCustomerName(string libraryName, string typeName, string originName, string partName = "toolbox")
+        {
+            string finalName = null;
+
+            if (customerDisplayConfig != null && customerDisplayConfig.ContainsKey("customerNames"))
+            {
+                JObject customerNames = (JObject)customerDisplayConfig["customerNames"];
+
+                JObject toolbox = (JObject)customerNames[partName];
+
+                if (libraryName != null && toolbox.ContainsKey(libraryName))
+                {
+                    JObject names = (JObject)toolbox[libraryName];
+                    if (names.ContainsKey(typeName))
+                    {
+                        string customerName = (string)names[typeName];
+                        if (customerName?.Length > 0)
+                        {
+                            finalName = customerName;
+                        }
+                    }
+                }
+
+                if (finalName == null && libraryName != "*" && toolbox.ContainsKey("*"))
+                {
+                    JObject names = (JObject)toolbox["*"];
+                    if (names.ContainsKey(typeName))
+                    {
+                        string customerName = (string)names[typeName];
+                        if (customerName?.Length > 0)
+                        {
+                            finalName = customerName;
+                        }
+                    }
+                }
+            }
+
+            if (finalName == null)
+            {
+                finalName = originName?.Length > 0 ? originName : typeName;
+            }
+
+            if (logDisplayConfig)
+            {
+                Log.Information($"libraryName={libraryName}, typeName={typeName}, originName={originName}, finalName={finalName}");
+            }
+
+
+            return finalName;
+        }
+
+        public static bool HideActivityMethod(string libraryName, string activityName)
+        {
+            bool hide = false;
+
+            if (hiddens?.Count > 0 && hiddens.Contains(activityName))
+            {
+                hide = true;
+            }
+
+            if (logDisplayConfig)
+            {
+                Log.Information($"Hide activity method: libraryName={libraryName}, activityName={activityName}, hide={hide}");
+            }
+
+            return hide;
+        }
+
+        /// <summary>
+        /// 配置文件格式：
+        /// <code>
+        /// {
+        ///   "log": false,
+        ///   "customerNames": {
+        ///     "toolbox": {
+        ///       "*": {},
+        ///       "OpenRPA": {}
+        ///     }
+        ///   },
+        ///   "instructs": {
+        ///     "hiddens": ["Name"]
+        ///   }
+        /// }
+        /// </code>
+        /// <list type="bullet">
+        /// <item>
+        /// log：表示是否输出处理日志
+        /// </item>
+        /// <item>
+        /// customerNames.toolbox：用于设置工具箱指令显示名称，key为模块名称，value为配置对象（对象的key为指令名称， value为显示名称）
+        /// </item>
+        /// <item>
+        /// instructs.hiddens：用于隐藏默认指令（非自定义）
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <returns></returns>
+        public static JObject GetCustomerDisplayConfig()
         {
             string host;
             if (string.IsNullOrEmpty(Config.local.wsurl))
@@ -35,7 +173,7 @@ namespace OpenRPA.Script
                 Directory.CreateDirectory(baseDir);
             }
 
-            var configFile = Path.Combine(baseDir, "customer-names.json");
+            var configFile = Path.Combine(baseDir, "customer-display.json");
             JObject configObject = null;
             if (File.Exists(configFile))
             {
@@ -51,7 +189,7 @@ namespace OpenRPA.Script
                 }
             }
 
-            if(configObject == null)
+            if (configObject == null)
             {
                 configObject = new JObject();
             }
@@ -73,7 +211,7 @@ namespace OpenRPA.Script
             return content;
         }
 
-        public static void ShowBalloonTip(string title, string content, int timeout=5000, ToolTipIcon icon= ToolTipIcon.Info)
+        public static void ShowBalloonTip(string title, string content, int timeout = 5000, ToolTipIcon icon = ToolTipIcon.Info)
         {
             var notifyIcon = new NotifyIcon();
             notifyIcon.Icon = SystemIcons.Information;
@@ -108,10 +246,11 @@ namespace OpenRPA.Script
             if (Directory.Exists(seleniumPath))
             {
                 hasChecked = true;
-            }else
+            }
+            else
             {
                 var fi = new System.IO.FileInfo(appDir + @"\Resources\python-pip-and-uniplore-requirelibs.zip");
-                if(!fi.Exists)
+                if (!fi.Exists)
                 {
                     Log.Warning("uniplore required libs not found: " + fi.FullName);
                     ShowBalloonTip("Error", "uniplore required libs not found", 5000, ToolTipIcon.Warning);
@@ -146,7 +285,7 @@ namespace OpenRPA.Script
                         process.WaitForExit();
                         int code = process.ExitCode;
 
-                        if (code != 0 )
+                        if (code != 0)
                         {
                             Log.Warning("install failed: code=" + code);
                             Log.Information("stdout is:\n" + output);
@@ -159,7 +298,7 @@ namespace OpenRPA.Script
                         }
 
                         Directory.Delete(tempDirectory, true);
-                       
+
                         //InvokeCode.InitPython();
                         //using (Python.Runtime.Py.GIL())
                         //{
@@ -170,12 +309,12 @@ namespace OpenRPA.Script
                         hasChecked = true;
                         Log.Information("python home: " + pyHome);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
-                        Log.Warning("install uniplore python libs failed: "+ ex.ToString());
+                        Log.Warning("install uniplore python libs failed: " + ex.ToString());
                         ShowBalloonTip("错误", "python依赖安装失败！", 5000, ToolTipIcon.Error);
                     }
-                    
+
                 }
             }
         }

@@ -27,7 +27,8 @@ namespace OpenRPA.Views
     /// </summary>
     public partial class WFToolbox : UserControl
     {
-        private JObject customerDisplayNames = null;
+        private System.Reflection.MethodInfo GetCustomerNameMethod = null;
+        private System.Reflection.MethodInfo HideActivityMethod = null;
 
         // public ToolboxControl toolbox { get; set; } = null;
         public WFToolbox()
@@ -67,7 +68,9 @@ namespace OpenRPA.Views
 
             if (uniploreRequireLibsType != null)
             {
-                customerDisplayNames = (JObject)uniploreRequireLibsType.GetMethod("GetCustomerDisplayNameConfig").Invoke(null, new object[] { });
+                GetCustomerNameMethod = uniploreRequireLibsType.GetMethod("GetCustomerName");
+                HideActivityMethod = uniploreRequireLibsType.GetMethod("HideActivityMethod");
+                uniploreRequireLibsType.GetMethod("LoadCustomerDisplayConfig").Invoke(null, new object[] { });
             }
         }
 
@@ -80,62 +83,23 @@ namespace OpenRPA.Views
             if (displayNameAttribute != null) displayName = displayNameAttribute.DisplayName;
             if (splitName.Length > 1) displayName = string.Format("{0}<>", displayName);
 
-            displayName = GetCustomerName(displayName, libraryName);
+            displayName = GetCustomerName(libraryName, type.Name, displayName);
 
             return displayName;
         }
 
-        private string GetCustomerName(string originName, string libraryName = null, string partName = "toolbox")
+        private string GetCustomerName(string libraryName, string typeName, string originName, string partName = "toolbox")
         {
             string displayName = null;
-            bool log = false;
-
-            if (customerDisplayNames != null && customerDisplayNames.ContainsKey(partName))
+            if (GetCustomerNameMethod != null)
             {
-                if (customerDisplayNames.ContainsKey("log"))
-                {
-                    log = (bool)customerDisplayNames["log"];
-                }
-
-                JObject toolbox = (JObject)customerDisplayNames[partName];
-
-                if (libraryName != null && toolbox.ContainsKey(libraryName))
-                {
-                    JObject names = (JObject)toolbox[libraryName];
-                    if (names.ContainsKey(originName))
-                    {
-                        string customerName = (string)names[originName];
-                        if (customerName?.Length > 0)
-                        {
-                            displayName = customerName;
-                        }
-                    }
-                }
-
-                if (displayName == null && libraryName != "*" && toolbox.ContainsKey("*"))
-                {
-                    JObject names = (JObject)toolbox["*"];
-                    if (names.ContainsKey(originName))
-                    {
-                        string customerName = (string)names[originName];
-                        if (customerName?.Length > 0)
-                        {
-                            displayName = customerName;
-                        }
-                    }
-                }
+                displayName = (string)GetCustomerNameMethod.Invoke(null, new object[] { libraryName, typeName, originName, partName });
             }
 
-            if (displayName == null)
+            if (displayName == null || displayName.Length == 0)
             {
-                displayName = originName;
+                displayName = originName?.Length > 0 ? originName : typeName;
             }
-
-            if (log)
-            {
-                Log.Information($"libraryName={libraryName}, originName={originName}, displayName={displayName}");
-            }
-
 
             return displayName;
         }
@@ -168,7 +132,7 @@ namespace OpenRPA.Views
                         };
                         // , "ParallelForEach", "ParallelForEachWithBodyFactory", "ForEachWithBodyFactory"
 
-                        var wfToolboxCategory = new ToolboxCategory(GetCustomerName(activityLibrary.GetName().Name, activityLibrary.GetName().Name));
+                        var wfToolboxCategory = new ToolboxCategory(GetCustomerName(activityLibrary.GetName().Name, activityLibrary.GetName().Name, null));
                         var actvities = from
                                             activityType in activityLibrary.GetExportedTypes()
                                         where
@@ -210,6 +174,7 @@ namespace OpenRPA.Views
                                             && activityType.Name != "ExcelActivityOf`1"
                                             && !activityType.FullName.EndsWith("Statements.DoWhile")
                                             && !activityType.FullName.EndsWith("Statements.While")
+                                            && (HideActivityMethod == null || !(bool)HideActivityMethod.Invoke(null, new object[] { activityLibrary.GetName().Name, activityType.Name }))
                                         orderby
                                             activityType.Name
                                         select
